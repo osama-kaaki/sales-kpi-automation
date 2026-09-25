@@ -1,0 +1,1042 @@
+table Clean_sales_data
+	lineageTag: 34d664aa-09e2-482c-91bb-c1080f8576b4
+
+	measure 'Total Leads' =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(Clean_sales_data),
+			
+			        CROSSFILTER(
+			            Date_Table[Date],
+			            Clean_sales_data[Close_Date],
+			            NONE
+			        ),
+			
+			        USERELATIONSHIP(
+			            Date_Table[Date],
+			            Clean_sales_data[Lead_Date]
+			        )
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 485bbf30-227f-4666-b14d-68e7f8c9efc7
+
+	measure 'Won Deals' =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(Clean_sales_data),
+			        Clean_sales_data[Lead_Status] = "Won"
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 0d78655b-d6b4-4137-9a83-77876f3922db
+
+	measure 'Total Sales' =
+			
+			CALCULATE(
+			    SUM(Clean_sales_data[Deal_Value]),
+			    Clean_sales_data[Lead_Status] = "Won"
+			)
+		formatString: #,0
+		lineageTag: 31a276e0-8083-4152-a82f-64151d36c672
+
+	measure 'Total Cost' =
+			
+			CALCULATE(
+			    SUM(Clean_sales_data[Cost]),
+			    Clean_sales_data[Lead_Status] = "Won"
+			)
+		formatString: 0
+		lineageTag: bb422be7-4967-4c85-9d63-479581e89e13
+
+	measure 'Gross Profit' = [Total Sales] - [Total Cost]
+		formatString: 0
+		lineageTag: 9e21a835-4f59-4a57-a93b-131a045c98f9
+
+	measure 'Lead Conversion' =
+			
+			VAR WonLeads =
+			    CALCULATE(
+			        [Total Leads],
+			        Clean_sales_data[Lead_Status] = "Won"
+			    )
+			RETURN
+			    DIVIDE(
+			        WonLeads,
+			        [Total Leads]
+			    )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: f558ec7e-41fc-4e52-9276-391609a1bc94
+
+	measure 'Lost Deals' =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(Clean_sales_data),
+			        Clean_sales_data[Lead_Status] = "Lost"
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 9cd52095-6c56-4c13-8bc8-ceefc8716857
+
+	measure 'Closed Deal Win Rate' =
+			
+			VAR WonCount = [Won Deals]
+			VAR LostCount = [Lost Deals]
+			VAR ClosedDeals = WonCount + LostCount
+			
+			RETURN
+			IF(
+			    ClosedDeals = 0,
+			    BLANK(),
+			    DIVIDE(WonCount, ClosedDeals)
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5fb96a85-8d7a-41b5-be8e-25c95e5324f8
+
+	measure 'Won Sales' =
+			
+			CALCULATE(
+			    [Total Sales],
+			    Clean_sales_data[Lead_Status] = "Won"
+			)
+		formatString: 0
+		lineageTag: 799eb14e-3ac7-494f-9505-f5bb299141c3
+
+	measure 'Pipeline Value' =
+			
+			COALESCE(
+			    CALCULATE(
+			        SUM(Clean_sales_data[Deal_Value]),
+			        CROSSFILTER(
+			            Date_Table[Date],
+			            Clean_sales_data[Close_Date],
+			            NONE
+			        ),
+			        USERELATIONSHIP(
+			            Date_Table[Date],
+			            Clean_sales_data[Lead_Date]
+			        ),
+			        Clean_sales_data[Lead_Status] IN {"Open", "Pending"}
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: aafd4d4e-3c88-4c46-a755-952fa85e3e7f
+
+	measure 'Average Deal Size' =
+			
+			DIVIDE(
+			    [Total Sales],
+			    [Won Deals],
+			    0
+			)
+		lineageTag: 41475dde-11ac-4618-a0a9-62f4fce526f6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Profit Margin %' =
+			
+			DIVIDE(
+			    [Gross Profit],
+			    [Total Sales],
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: af8c5987-f9c9-4e62-bdda-d18237655a5d
+
+	measure 'Sales Target' =
+			
+			IF(
+			    [Is Target Period Selected],
+			    SUM(Dim_Salesperson[Period_Target]),
+			    BLANK()
+			)
+		formatString: #,0
+		lineageTag: 60d04e3c-bb8e-46e2-a6b6-9e381796c6d2
+
+	measure 'Target Achievement %' =
+			
+			IF(
+			    ISBLANK([Sales Target]),
+			    BLANK(),
+			    DIVIDE(
+			        [Total Sales],
+			        [Sales Target]
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: f8c41474-5431-4def-9283-2a4f47486c85
+
+	measure 'Target Gap' =
+			
+			VAR TargetValue = [Sales Target]
+			RETURN
+			    IF(
+			        ISBLANK(TargetValue),
+			        BLANK(),
+			        MAX(
+			            TargetValue - [Total Sales],
+			            0
+			        )
+			    )
+		formatString: #,0
+		lineageTag: ece2e4f1-31ec-4fb5-bd16-1701ac8c04b5
+
+	measure 'Salesperson Rank' =
+			
+			IF(
+			    ISINSCOPE(Dim_Salesperson[Salesperson]),
+			
+			    VAR Team =
+			        CALCULATETABLE(
+			            VALUES(Dim_Salesperson[Salesperson]),
+			            REMOVEFILTERS(Salesperson_Filter),
+			            REMOVEFILTERS(Dim_Salesperson[Salesperson])
+			        )
+			
+			    RETURN
+			        RANKX(
+			            Team,
+			            CALCULATE(
+			                [Total Sales],
+			                REMOVEFILTERS(Salesperson_Filter)
+			            ),
+			            [Total Sales],
+			            DESC,
+			            DENSE
+			        )
+			)
+		formatString: 0
+		lineageTag: 9d5537eb-cc03-4f02-a548-7f926d796c2c
+
+	measure 'Performance Status' =
+			
+			VAR Achievement = [Target Achievement %]
+			RETURN
+			IF(
+			    ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    IF(
+			        [Has Breakdown Filter]
+			            || ISBLANK(Achievement),
+			        "Not evaluated",
+			        SWITCH(
+			            TRUE(),
+			            Achievement >= 0.70, "On Track",
+			            Achievement >= 0.50, "At Risk",
+			            "Critical"
+			        )
+			    )
+			)
+		lineageTag: c7240a4c-4683-46f2-a671-82ba36a011c9
+
+	measure 'Top Salesperson' =
+			
+			VAR TopPerson =
+			    TOPN(
+			        1,
+			        ALLSELECTED(Clean_sales_data[Salesperson]),
+			        [Total Sales],
+			        DESC
+			    )
+			    RETURN
+			        MAXX(
+			            TopPerson,
+			            Clean_sales_data[Salesperson]
+			        )
+		lineageTag: 6103c333-92a3-4517-9e8d-dc9ed71f2e75
+
+	measure 'Top Salesperson Summary' = ```
+			
+			VAR TopPerson =
+			    TOPN(
+			        1,
+			        ALLSELECTED(Clean_sales_data[Salesperson]),
+			        [Total Sales],
+			        DESC,
+			        Clean_sales_data[Salesperson],
+			    )
+			VAR PersonName =
+			    MAXX(
+			        TopPerson,
+			        Clean_sales_data[Salesperson]
+			    )
+			VAR PersonSales = 
+			    MAXX(
+			        TopPerson,
+			        [Total Sales]
+			    )
+			RETURN
+			    PersonName
+			    & " - "
+			    & FORMAT(DIVIDE(PersonSales, 1000), "0")
+			    & "K Sales"
+			```
+		lineageTag: 3b009364-d907-4f61-9e9e-005ca32ce5f8
+
+	measure 'Top Salesperson Insight' = ```
+			
+			VAR TopPerson = 
+			    TOPN(
+			        1,ALLSELECTED(Clean_sales_data[Salesperson]),
+			        [Total Sales],
+			        DESC,
+			        Clean_sales_data[Salesperson],
+			        ASC
+			    )
+			    VAR PersonName = 
+			        MAXX(TopPerson,
+			        Clean_sales_data[Salesperson]
+			        )
+			    VAR PersonSales =
+			        MAXX(
+			            TopPerson,
+			            [Total Sales]
+			        )
+			    VAR PersonAchievement = 
+			        CALCULATE(
+			            [Target Achievement %],
+			            KEEPFILTERS(TopPerson)
+			        )
+			    VAR PersonStatus = 
+			        SWITCH(
+			            TRUE(),
+			            PersonAchievement >= 0.70, "On Track",
+			            PersonAchievement >= 0.50, "At Risk",
+			            "Critical"
+			        )
+			    RETURN
+			        PersonName
+			        & " - "
+			        & FORMAT(DIVIDE(PersonSales, 1000), "0.#")
+			        & "K Sales - "
+			        & FORMAT(PersonAchievement, "0.0%")
+			        & " - "
+			        & PersonStatus
+			```
+		lineageTag: 8eb1b426-7737-400a-bef9-6ccb3334cd03
+
+	measure 'Sales Contribution %' =
+			
+			VAR TeamSales =
+			    CALCULATE(
+			        [Total Sales],
+			        REMOVEFILTERS(Salesperson_Filter),
+			        REMOVEFILTERS(Dim_Salesperson[Salesperson])
+			    )
+			
+			RETURN
+			DIVIDE(
+			    [Total Sales],
+			    TeamSales
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 54f3f586-ef9b-485d-a108-9d0f31dc6eb2
+
+	measure 'Average Sales per Salesperson' =
+			
+			VAR Team =
+			    CALCULATETABLE(
+			        VALUES(Dim_Salesperson[Salesperson]),
+			        REMOVEFILTERS(Salesperson_Filter),
+			        REMOVEFILTERS(Dim_Salesperson[Salesperson])
+			    )
+			
+			RETURN
+			AVERAGEX(
+			    Team,
+			    COALESCE(
+			        CALCULATE(
+			            [Total Sales],
+			            REMOVEFILTERS(Salesperson_Filter)
+			        ),
+			        0
+			    )
+			)
+		lineageTag: 32831555-21da-43b6-b143-7fcf57fbf803
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Sales vs Average' =
+			
+			VAR TeamSales =
+			    CALCULATE(
+			        [Total Sales],
+			        ALLSELECTED(Dim_Salesperson[Salesperson])
+			    )
+			RETURN
+			IF(
+			    NOT ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    BLANK(),
+			    IF(
+			        COALESCE(TeamSales, 0) = 0,
+			        BLANK(),
+			        [Total Sales] - [Average Sales per Salesperson]
+			    )
+			)
+		formatString: #,0
+		lineageTag: 6067859c-a19c-4284-882d-79e75ba98d5a
+
+	measure 'Sales vs Average Status' =
+			
+			VAR TeamSales =
+			    CALCULATE(
+			        [Total Sales],
+			        ALLSELECTED(Dim_Salesperson[Salesperson])
+			    )
+			RETURN
+			IF(
+			    ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    IF(
+			        COALESCE(TeamSales, 0) = 0,
+			        "No sales",
+			        SWITCH(
+			            TRUE(),
+			            [Sales vs Average %] > 0, "Above Average",
+			            [Sales vs Average %] < 0, "Below Average",
+			            "Average"
+			        )
+			    ),
+			    BLANK()
+			)
+		lineageTag: be908b58-cb09-4601-a879-e3cae293bb3f
+
+	measure 'Sales vs Average %' =
+			
+			VAR TeamSales =
+			    CALCULATE(
+			        [Total Sales],
+			        ALLSELECTED(Dim_Salesperson[Salesperson])
+			    )
+			RETURN
+			IF(
+			    NOT ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    BLANK(),
+			    IF(
+			        COALESCE(TeamSales, 0) = 0,
+			        BLANK(),
+			        DIVIDE(
+			            [Sales vs Average],
+			            [Average Sales per Salesperson]
+			        )
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: f3ab3008-53b9-454a-a717-4f114af222e1
+
+	measure 'Intervention Priority' =
+			
+			VAR PerformanceStatus = [Performance Status]
+			VAR Achievement = [Target Achievement %]
+			VAR SalesVsAverage = [Sales vs Average %]
+			
+			RETURN
+			IF(
+			    ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    IF(
+			        PerformanceStatus = "Not evaluated"
+			            || ISBLANK(Achievement),
+			        "Not evaluated",
+			        SWITCH(
+			            TRUE(),
+			            Achievement < 0.50
+			                && SalesVsAverage < -0.10,
+			                "Immediate Intervention",
+			
+			            Achievement < 0.70
+			                || SalesVsAverage < -0.10,
+			                "Needs Attention",
+			
+			            "Healthy"
+			        )
+			    )
+			)
+		lineageTag: feb2ff1e-178c-4f13-91c2-8993d413359e
+
+	measure 'Intervention Color' =
+			
+			SWITCH(
+			    [Intervention Priority],
+			    "Healthy", "#D9EAD3",
+			    "Needs Attention", "#FFF2CC",
+			    "Immediate Intervention", "#F4CCCC",
+			    "#FFFFFF"
+			)
+		lineageTag: 626e7f45-f31b-46b5-925b-035c8f63e184
+
+	measure 'Management Recommendation' =
+			
+			IF(
+			    ISINSCOPE(Dim_Salesperson[Salesperson]),
+			    SWITCH(
+			        TRUE(),
+			
+			        [Has Breakdown Filter],
+			            "No target allocated for this breakdown",
+			
+			        NOT([Is Target Period Selected]),
+			            "Not evaluated for the selected period",
+			
+			        [Intervention Priority] = "Healthy",
+			            "Maintain performance and pursue upsell opportunities",
+			
+			        [Intervention Priority] = "Needs Attention",
+			            "Review pipeline and focus on high-probability deals",
+			
+			        [Intervention Priority] = "Immediate Intervention",
+			            "Immediate coaching and pipeline recovery required",
+			
+			        [Intervention Priority] = "Not evaluated",
+			            "Not evaluated",
+			
+			        BLANK()
+			    )
+			)
+		lineageTag: 8ad84186-9b25-4a12-9626-1fd72bc106ce
+
+	measure 'Team Health Summary' = ```
+			
+			VAR HealthyCount =
+			    COALESCE(
+			        COUNTROWS(
+			            FILTER(
+			                VALUES(Clean_sales_data[Salesperson]),
+			                CALCULATE([Target Achievement %]) >= 0.70
+			        )
+			    ),
+			    0
+			)
+			
+			VAR AttentionCount =
+			    COALESCE(
+			        COUNTROWS(
+			            FILTER(
+			                VALUES(Clean_sales_data[Salesperson]),
+			                VAR Achievement = 
+			                    CALCULATE([Target Achievement %])
+			                RETURN
+			                    Achievement >= 0.50 &&
+			                    Achievement < 0.70
+			        )
+			    ),
+			    0
+			)
+			
+			VAR CriticalCount =
+			    COALESCE(
+			        COUNTROWS(
+			            FILTER(
+			                VALUES(Clean_sales_data[Salesperson]),
+			                CALCULATE([Target Achievement %]) < 0.50
+			        )
+			    ),
+			    0
+			)
+			
+			    RETURN
+			        "Team Health: "
+			        & HealthyCount & " Healthy | "
+			        & AttentionCount & " Need Attention | "
+			        & CriticalCount & " Critical"
+			```
+		lineageTag: 9eb49f2a-8008-47a6-8c46-0d73f0c5e4df
+
+	measure 'Salesperson Detail Title' =
+			
+			"Salesperson Details - " &
+			SELECTEDVALUE(
+			    Dim_Salesperson[Salesperson],
+			    "No Salesperson Selected"
+			)
+		lineageTag: d0683e9b-9471-453f-9697-669d05acc629
+
+	measure 'Tooltip Salesperson' =
+			
+			SELECTEDVALUE(
+			    Dim_Salesperson[Salesperson],
+			    "Salesperson"
+			)
+		lineageTag: 5e57e831-1a3c-4cb1-80c8-d0ddf9754bdd
+
+	measure 'Tooltip Performance Status' =
+			
+			IF(
+			    HASONEVALUE(Dim_Salesperson[Salesperson]),
+			    SWITCH(
+			        TRUE(),
+			
+			        [Has Breakdown Filter],
+			            "Not evaluated",
+			
+			        NOT([Is Target Period Selected]),
+			            "Not evaluated",
+			
+			        ISBLANK([Target Achievement %]),
+			            "Not evaluated",
+			
+			        [Target Achievement %] >= 0.70,
+			            "On Track",
+			
+			        [Target Achievement %] >= 0.50,
+			            "At Risk",
+			
+			        "Critical"
+			    ),
+			    BLANK()
+			)
+		lineageTag: 4da94c4c-0a4d-4a04-8aed-aa3748f1340e
+
+	measure 'Tooltip Intervention Priority' =
+			
+			VAR TooltipVsAveragePct =
+			    DIVIDE(
+			        [Total Sales] - [Average Sales per Salesperson],
+			        [Average Sales per Salesperson]
+			    )
+			
+			RETURN
+			IF(
+			    HASONEVALUE(Dim_Salesperson[Salesperson]),
+			    SWITCH(
+			        TRUE(),
+			
+			        [Has Breakdown Filter],
+			            "Not evaluated",
+			
+			        NOT([Is Target Period Selected]),
+			            "Not evaluated",
+			
+			        ISBLANK([Target Achievement %]),
+			            "Not evaluated",
+			
+			        [Target Achievement %] < 0.50
+			            && TooltipVsAveragePct < -0.10,
+			            "Immediate Intervention",
+			
+			        [Target Achievement %] < 0.70
+			            || TooltipVsAveragePct < -0.10,
+			            "Needs Attention",
+			
+			        "Healthy"
+			    ),
+			    BLANK()
+			)
+		lineageTag: eb650cb2-1f18-4397-9ae2-4282dde87ccb
+
+	measure 'Sales YTD' =
+			
+			TOTALYTD(
+			    [Total Sales],
+			    Date_Table[Date]
+			)
+		formatString: 0
+		lineageTag: ae0f52dc-14e8-40ad-a6ae-4e2ff50484f2
+
+	measure 'Previous Month Sales' =
+			
+			VAR AnchorDate =
+			    MAX(Date_Table[Date])
+			
+			VAR PreviousMonthStart =
+			    EOMONTH(AnchorDate, -2) + 1
+			
+			VAR PreviousMonthEnd =
+			    EOMONTH(AnchorDate, -1)
+			
+			RETURN
+			CALCULATE(
+			    [Total Sales],
+			    REMOVEFILTERS(Date_Table),
+			    DATESBETWEEN(
+			        Date_Table[Date],
+			        PreviousMonthStart,
+			        PreviousMonthEnd
+			    )
+			)
+		formatString: 0
+		lineageTag: 8e266162-3f08-4f3f-b355-e1ca3edf2301
+
+	measure 'MoM Growth %' =
+			
+			VAR CurrentSales =
+			    [Total Sales]
+			
+			VAR PreviousSales =
+			    [Previous Month Sales]
+			
+			RETURN
+			IF(
+			    ISBLANK(CurrentSales) ||
+			    ISBLANK(PreviousSales),
+			    BLANK(),
+			    DIVIDE(
+			        CurrentSales - PreviousSales,
+			        PreviousSales
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: bb33afde-a003-469b-87e3-79bc0176f92e
+
+	measure 'Sales MTD' =
+			
+			TOTALMTD(
+			    [Total Sales],
+			    Date_Table[Date]
+			)
+		formatString: 0
+		lineageTag: f34ac321-4480-4be1-918c-54a3087c5761
+
+	measure 'Lead Created' =
+			
+			[Total Leads]
+		formatString: 0
+		lineageTag: 32da7a13-d0bd-4252-9cfc-e4f881942555
+
+	measure 'Show Selected Salesperson' =
+			
+			VAR CurrentSalesperson =
+			    SELECTEDVALUE(Dim_Salesperson[Salesperson])
+			
+			RETURN
+			IF(
+			    NOT ISFILTERED(Salesperson_Filter[Salesperson])
+			        || CurrentSalesperson
+			            IN VALUES(Salesperson_Filter[Salesperson]),
+			    1,
+			    0
+			)
+		formatString: 0
+		lineageTag: be712d5a-e13f-4ff1-b33a-422ce9b670be
+
+	measure 'Has Breakdown Filter' =
+			
+			VAR CurrentRegions =
+			    COUNTROWS(
+			        VALUES(Clean_sales_data[Region])
+			    )
+			
+			VAR AvailableRegions =
+			    CALCULATE(
+			        COUNTROWS(
+			            VALUES(Clean_sales_data[Region])
+			        ),
+			        REMOVEFILTERS(Clean_sales_data[Region])
+			    )
+			
+			VAR CurrentLeadSources =
+			    COUNTROWS(
+			        VALUES(Clean_sales_data[Lead_Source])
+			    )
+			
+			VAR AvailableLeadSources =
+			    CALCULATE(
+			        COUNTROWS(
+			            VALUES(Clean_sales_data[Lead_Source])
+			        ),
+			        REMOVEFILTERS(Clean_sales_data[Lead_Source])
+			    )
+			
+			VAR CurrentProducts =
+			    COUNTROWS(
+			        VALUES(Clean_sales_data[Product_Service])
+			    )
+			
+			VAR AvailableProducts =
+			    CALCULATE(
+			        COUNTROWS(
+			            VALUES(Clean_sales_data[Product_Service])
+			        ),
+			        REMOVEFILTERS(Clean_sales_data[Product_Service])
+			    )
+			
+			RETURN
+			    CurrentRegions < AvailableRegions
+			        || CurrentLeadSources < AvailableLeadSources
+			        || CurrentProducts < AvailableProducts
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 6614e958-2268-4b5d-a7fb-68e1128eadb4
+
+	measure 'Tooltip Target Achievement %' =
+			
+			IF(
+			    HASONEVALUE(Dim_Salesperson[Salesperson]),
+			    IF(
+			        [Has Breakdown Filter],
+			        BLANK(),
+			        [Target Achievement %]
+			    ),
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: bfcde2ee-5276-4aa7-a632-aadaa129c47e
+
+	measure 'Display Sales Target' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    BLANK(),
+			    [Sales Target]
+			)
+		formatString: #,0
+		lineageTag: 55211cde-581b-4d9e-bcf7-a33d041955ca
+
+	measure 'Display Target Achievement %' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    BLANK(),
+			    [Target Achievement %]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: cc9934d9-b07f-4591-bf11-0d1ab539742f
+
+	measure 'Display Target Gap' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    BLANK(),
+			    [Target Gap]
+			)
+		formatString: #,0
+		lineageTag: 20e005cf-a861-4ce5-b471-6e78cbf51b87
+
+	measure 'Target Chart Sales' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    BLANK(),
+			    [Total Sales]
+			)
+		formatString: 0
+		lineageTag: 59c1687e-fdc8-4fb3-a7af-eab2729d85a8
+
+	measure 'Target Chart Title' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    "Target comparison unavailable",
+			    "Sales Performance vs Target"
+			)
+		lineageTag: 6e5499b8-d902-4d2e-8484-1e1519399cb9
+
+	measure 'Target Chart Subtitle' =
+			
+			IF(
+			    [Has Breakdown Filter],
+			    "Targets are allocated at salesperson level, not by Lead Source, Region, or Product",
+			    "by Salesperson"
+			)
+		lineageTag: e9e243c0-567b-4454-83ec-360352a08973
+
+	measure 'Detail Management Recommendation' =
+			
+			IF(
+			    HASONEVALUE(Dim_Salesperson[Salesperson]),
+			    SWITCH(
+			        TRUE(),
+			
+			        [Has Breakdown Filter],
+			            "No target allocated for this breakdown",
+			
+			        NOT([Is Target Period Selected]),
+			            "Select 1 May to 30 June 2026 to evaluate performance against target.",
+			
+			        [Tooltip Intervention Priority] = "Healthy",
+			            "Maintain performance and pursue upsell opportunities",
+			
+			        [Tooltip Intervention Priority] = "Needs Attention",
+			            "Review pipeline and focus on high-probability deals",
+			
+			        [Tooltip Intervention Priority] = "Immediate Intervention",
+			            "Immediate coaching and pipeline recovery required",
+			
+			        "Not evaluated"
+			    ),
+			    BLANK()
+			)
+		lineageTag: 9dabfa05-69d5-4f21-8859-44bab4a15f3f
+
+	measure 'Detail Target Note' =
+			
+			SWITCH(
+			    TRUE(),
+			
+			    [Has Breakdown Filter],
+			        "Target comparison unavailable: targets are not allocated by Lead Source, Region, or Product.",
+			
+			    NOT([Is Target Period Selected]),
+			        "Target comparison unavailable: select the full target period, 1 May to 30 June 2026.",
+			
+			    "Target period: 1 May–30 June 2026. Sales compared with the salesperson's full-period target."
+			)
+		lineageTag: 0c43d600-ec7c-4ffd-938a-c697f8eb337d
+
+	measure 'Performance Status Color' =
+			
+			SWITCH(
+			    [Tooltip Performance Status],
+			    "On Track", "#2E7D32",
+			    "At Risk", "#B26A00",
+			    "Critical", "#C62828",
+			    "Not evaluated", "#6B7280",
+			    "#1F2937"
+			)
+		lineageTag: 671821b7-5da0-4e1b-ad62-0303948b0c5e
+
+	measure 'Intervention Priority Color' =
+			
+			SWITCH(
+			    [Tooltip Intervention Priority],
+			    "Healthy", "#2E7D32",
+			    "Needs Attention", "#B26A00",
+			    "Immediate Intervention", "#C62828",
+			    "Not evaluated", "#6B7280",
+			    "#1F2937"
+			)
+		lineageTag: d1997bf3-f733-4b9b-9dd6-65b9c05b7bfc
+
+	measure 'Is Target Period Selected' =
+			
+			VAR SelectedStart =
+			    MINX(
+			        ALLSELECTED(Date_Table[Date]),
+			        Date_Table[Date]
+			    )
+			VAR SelectedEnd =
+			    MAXX(
+			        ALLSELECTED(Date_Table[Date]),
+			        Date_Table[Date]
+			    )
+			RETURN
+			    SelectedStart = DATE(2026, 5, 1)
+			        && SelectedEnd = DATE(2026, 6, 30)
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 85987c8b-65d7-40c0-a692-4ea9f23c3d36
+
+	column Lead_ID
+		dataType: string
+		lineageTag: fe2b0a56-808c-4ec7-bbfc-64b84792b85a
+		summarizeBy: none
+		sourceColumn: Lead_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lead_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: aad1df1e-6ef1-4dd9-815c-1a49f7634c42
+		summarizeBy: none
+		sourceColumn: Lead_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Customer_Name
+		dataType: string
+		lineageTag: c749c41b-34db-4b1f-b534-0d656d806434
+		summarizeBy: none
+		sourceColumn: Customer_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Salesperson
+		dataType: string
+		lineageTag: 7b3182ef-9342-4fcf-be55-d9b72b3d7ffb
+		summarizeBy: none
+		sourceColumn: Salesperson
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product_Service
+		dataType: string
+		lineageTag: e4bea198-54ab-41ad-bb48-ac00f3fa5a00
+		summarizeBy: none
+		sourceColumn: Product_Service
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lead_Source
+		dataType: string
+		lineageTag: de4af2c3-01f4-4200-9b60-cb382aebe1c5
+		summarizeBy: none
+		sourceColumn: Lead_Source
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lead_Status
+		dataType: string
+		lineageTag: ebbfc951-fd3f-42ea-96b4-bb98c5f445fb
+		summarizeBy: none
+		sourceColumn: Lead_Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Deal_Value
+		dataType: int64
+		formatString: #,0
+		lineageTag: 461caf97-7a0c-445a-9bd5-e624f84b24fb
+		summarizeBy: sum
+		sourceColumn: Deal_Value
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cost
+		dataType: int64
+		formatString: #,0
+		lineageTag: 319adb3c-f822-4919-9af8-e6487599ac20
+		summarizeBy: sum
+		sourceColumn: Cost
+
+		annotation SummarizationSetBy = Automatic
+
+	column Target
+		dataType: int64
+		formatString: 0
+		lineageTag: 0ae3b1bb-34ff-4ad0-adbd-18e216b2929a
+		summarizeBy: sum
+		sourceColumn: Target
+
+		annotation SummarizationSetBy = Automatic
+
+	column Close_Date
+		dataType: dateTime
+		formatString: mmmm d\, yyyy
+		lineageTag: 56b34ed8-a75e-416e-9244-9744142bdb69
+		summarizeBy: none
+		sourceColumn: Close_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Region
+		dataType: string
+		lineageTag: 025ee177-20bb-47d1-95a3-74b477b0c2f4
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Clean_sales_data = m
+		mode: import
+		source =
+				let
+				  Source = Excel.Workbook(File.Contents(DataFilePath), null, true),
+				  #"Navigation 1" = Source{[Item = "Sheet1", Kind = "Sheet"]}[Data],
+				  #"Promoted headers" = Table.PromoteHeaders(#"Navigation 1", [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers",{{"Lead_ID", type text}, {"Lead_Date", type date}, {"Customer_Name", type text}, {"Salesperson", type text}, {"Product_Service", type text}, {"Lead_Source", type text}, {"Lead_Status", type text}, {"Deal_Value", Int64.Type}, {"Cost", Int64.Type}, {"Target", Int64.Type}, {"Close_Date", type date}, {"Region", type text}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,58 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# VS Code local settings
+.vscode/
+
+# Windows / OS files
+Thumbs.db
+.DS_Store
+
+# Temporary Office files
+~$*.xlsx
+~$*.xlsm
+~$*.docx
+
+# Temporary Python files
+*.tmp
+*.log
+
+# Runtime / generated workflow outputs
+delivery/*
+archive/*
+failed/*
+logs/*
+incoming/*
+
+# Local test and backup datasets
+data_raw/*
+
+# Local project archives and planning files
+*.zip
+Sales_KPI_Automation_Strategic_Roadmap*
+
+# Keep folder placeholders if added later
+!delivery/.gitkeep
+!archive/.gitkeep
+!failed/.gitkeep
+!logs/.gitkeep
+!incoming/.gitkeep
+!data_raw/.gitkeep
+
+# Generated processed outputs
+data_processed/*
+!data_processed/.gitkeep
+
+# Old local Power BI project
+Sales_Performance_Review_OLD/
+
+# Power BI local/cache files
+**/.pbi/
+
+# Power BI binary file - PBIP source is used for GitHub
+*.pbix

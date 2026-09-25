@@ -1,0 +1,75 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "0b23d9dfa873dca69645",
+  "position": {
+    "x": 200,
+    "y": 74,
+    "z": 1000,
+    "height": 70,
+    "width": 200,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clean_sales_data"
+                    }
+                  },
+                  "Property": "Tooltip Target Achievement %"
+                }
+              },
+              "queryRef": "Clean_sales_data.Tooltip Target Achievement %",
+              "nativeQueryRef": "Target Achievement %",
+              "displayName": "Target Achievement %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Clean_sales_data"
+                  }
+                },
+                "Property": "Tooltip Target Achievement %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "3614a5e748952bcc1310",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Clean_sales_data"
+              }
+            },
+            "Property": "Tooltip Target Achievement %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

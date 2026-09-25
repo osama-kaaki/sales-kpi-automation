@@ -1,0 +1,77 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "40fad35f88c002982e73",
+  "position": {
+    "x": 1713.1034482758621,
+    "y": 69.162561576354676,
+    "z": 14000,
+    "height": 46.551724137931032,
+    "width": 196.84729064039408,
+    "tabOrder": 14000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Salesperson_Filter"
+                    }
+                  },
+                  "Property": "Salesperson"
+                }
+              },
+              "queryRef": "Salesperson_Filter.Salesperson",
+              "nativeQueryRef": "Salesperson",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5156dc53078c356ba00b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Salesperson_Filter"
+              }
+            },
+            "Property": "Salesperson"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

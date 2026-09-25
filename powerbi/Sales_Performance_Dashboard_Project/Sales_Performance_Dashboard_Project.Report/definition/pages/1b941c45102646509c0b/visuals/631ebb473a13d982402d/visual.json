@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "631ebb473a13d982402d",
+  "position": {
+    "x": 0,
+    "y": 144,
+    "z": 2000,
+    "height": 80,
+    "width": 400,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clean_sales_data"
+                    }
+                  },
+                  "Property": "Tooltip Performance Status"
+                }
+              },
+              "queryRef": "Clean_sales_data.Tooltip Performance Status",
+              "nativeQueryRef": "Performance Status",
+              "displayName": "Performance Status"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b143c0b6443614320b20",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Clean_sales_data"
+              }
+            },
+            "Property": "Tooltip Performance Status"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "ac14e5fac2d0e115e90c",
+  "position": {
+    "x": 0,
+    "y": 220,
+    "z": 3000,
+    "height": 80,
+    "width": 400,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clean_sales_data"
+                    }
+                  },
+                  "Property": "Tooltip Intervention Priority"
+                }
+              },
+              "queryRef": "Clean_sales_data.Tooltip Intervention Priority",
+              "nativeQueryRef": "Intervention Priority",
+              "displayName": "Intervention Priority"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "41e8ffe786abe6ecc162",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Clean_sales_data"
+              }
+            },
+            "Property": "Tooltip Intervention Priority"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

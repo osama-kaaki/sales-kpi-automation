@@ -1,0 +1,8 @@
+/// Path to the validated clean sales dataset used by Power BI
+expression DataFilePath = "C:\Path\To\Sales_KPI_Automation\data_processed\clean_sales_data.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 5cbd1ba2-0d40-4abf-a32f-46277d6f1beb
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

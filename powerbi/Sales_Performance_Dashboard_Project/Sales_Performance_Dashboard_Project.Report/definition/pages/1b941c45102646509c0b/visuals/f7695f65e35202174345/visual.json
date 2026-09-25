@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "f7695f65e35202174345",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 4000,
+    "height": 74,
+    "width": 400,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clean_sales_data"
+                    }
+                  },
+                  "Property": "Tooltip Salesperson"
+                }
+              },
+              "queryRef": "Clean_sales_data.Tooltip Salesperson",
+              "nativeQueryRef": "Salesperson",
+              "displayName": "Salesperson"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d482689b170b0e7baae8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Clean_sales_data"
+              }
+            },
+            "Property": "Tooltip Salesperson"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

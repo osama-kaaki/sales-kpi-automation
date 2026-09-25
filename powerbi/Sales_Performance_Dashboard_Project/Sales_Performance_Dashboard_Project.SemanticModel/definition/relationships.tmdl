@@ -1,0 +1,17 @@
+relationship df3c66fa-40e6-15d7-c47b-23f25c8c4ee6
+	fromColumn: Clean_sales_data.Close_Date
+	toColumn: Date_Table.Date
+
+relationship d749056a-0603-c29b-a865-c670b9412cff
+	isActive: false
+	fromColumn: Clean_sales_data.Lead_Date
+	toColumn: Date_Table.Date
+
+relationship 952863cb-af5c-14e8-5d67-a3c5380ac067
+	fromColumn: Clean_sales_data.Salesperson
+	toColumn: Dim_Salesperson.Salesperson
+
+relationship 9e4fce48-ac6f-b6a8-e493-2d5ad207679e
+	fromColumn: Dim_Salesperson.Salesperson
+	toColumn: Salesperson_Filter.Salesperson
+

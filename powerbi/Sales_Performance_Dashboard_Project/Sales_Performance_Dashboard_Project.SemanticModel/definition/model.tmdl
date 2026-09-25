@@ -1,0 +1,22 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Clean_sales_data","DataFilePath"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Clean_sales_data
+ref table Date_Table
+ref table Dim_Salesperson
+ref table Salesperson_Filter
+
+ref cultureInfo en-US
+

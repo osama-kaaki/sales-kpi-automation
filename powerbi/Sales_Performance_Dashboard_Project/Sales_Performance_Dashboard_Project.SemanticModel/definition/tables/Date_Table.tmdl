@@ -1,0 +1,77 @@
+table Date_Table
+	lineageTag: d6c0e052-6cb3-4387-a13a-7e7e346ad5cc
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: Long Date
+		lineageTag: 9266d8b8-03fa-4905-9451-28335c69367a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year =
+			
+			YEAR(Date_Table[Date])
+		formatString: 0
+		lineageTag: 081f6ed5-9cc1-41a7-8fac-33d7dc223679
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month =
+			
+			FORMAT(Date_Table[Date], "MMMM")
+		lineageTag: 59260d16-0033-481e-a004-7c8afa8e8b81
+		summarizeBy: none
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number' =
+			
+			MONTH(Date_Table[Date])
+		formatString: 0
+		lineageTag: 2f217087-17de-4ae6-b3ab-9f49224253ca
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month' =
+			
+			FORMAT(Date_Table[Date], "YYYY-MM")
+		lineageTag: 3c877c8b-7f95-4e27-a63b-b27b5ff59ad9
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter =
+			
+			"Q" & FORMAT(Date_Table[Date], "Q")
+		lineageTag: 3ff94705-3d19-4036-b721-348228279655
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date_Table = calculated
+		mode: import
+		source =
+				
+				VAR MinDate =
+				    MIN(Clean_sales_data[Lead_Date])
+				
+				VAR MaxDate =
+				    MAX(Clean_sales_data[Close_Date])
+				
+				RETURN
+				    CALENDAR(
+				        DATE(YEAR(MinDate), 1, 1),
+				        DATE(YEAR(MaxDate), 12, 31)
+				    )
+
+	annotation PBI_Id = 3d66da2369584c049304f697c38a22c8
+

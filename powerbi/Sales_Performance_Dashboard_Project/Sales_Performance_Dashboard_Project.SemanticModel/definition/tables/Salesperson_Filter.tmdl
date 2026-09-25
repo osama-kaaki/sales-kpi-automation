@@ -1,0 +1,19 @@
+table Salesperson_Filter
+	lineageTag: ce621f9b-a4df-4f34-bc70-276c71179f52
+
+	column Salesperson
+		lineageTag: 5a85d6f9-34f3-410f-9346-c89ea0ca5d2c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Dim_Salesperson[Salesperson]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Salesperson_Filter = calculated
+		mode: import
+		source =
+				
+				DISTINCT(Dim_Salesperson[Salesperson])
+
+	annotation PBI_Id = 4d23f0f6b29b49f1bb02c5bc8580187b
+

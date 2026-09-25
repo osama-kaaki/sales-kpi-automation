@@ -1,0 +1,90 @@
+{
+    "files": {
+        "raw_sales_data": "data_raw/raw_sales_data.xlsx",
+        "clean_sales_data": "data_processed/clean_sales_data.xlsx",
+        "validation_report": "data_processed/validation_report.xlsx",
+        "audit_report": "data_processed/audit_report.xlsx",
+        "kpi_report": "data_processed/sales_kpi_report.xlsx"
+    },
+
+    "required_schema_columns": [
+        "Lead_ID",
+        "Lead_Date",
+        "Close_Date",
+        "Customer_Name",
+        "Salesperson",
+        "Product_Service",
+        "Lead_Source",
+        "Lead_Status",
+        "Deal_Value",
+        "Cost",
+        "Target",
+        "Region"
+    ],
+
+    "required_value_columns": [
+         "Lead_ID",
+        "Lead_Date",
+        "Customer_Name",
+        "Salesperson",
+        "Product_Service",
+        "Lead_Source",
+        "Lead_Status",
+        "Deal_Value",
+        "Target",
+        "Region"
+    ],
+
+    "allowed_statuses": [
+        "Won",
+        "Lost",
+        "Open",
+        "Pending"
+    ],
+
+    "status_roles": {
+        "won": "Won",
+        "lost": "Lost",
+        "open": "Open",
+        "pending": "Pending"
+    },
+
+    "date_rules": {
+        "Lead_Date": {
+            "start": "2026-05-01",
+            "end": "2026-05-31"
+        },
+        "Close_Date": {
+            "start": "2026-05-01",
+            "end": "2026-06-30"
+        }
+    },
+
+    "lead_source_corrections": {
+        "Linkedin": "LinkedIn"
+    },
+
+    "product_service_map": {
+        "itsupportcontract": "IT Support Contract",
+        "microsoft365setup": "Microsoft 365 Setup",
+        "automationproject": "Automation Project",
+        "networkinstallation": "Network Installation",
+        "backupsolution": "Backup Solution"
+    },
+
+    "safe_status_corrections": {
+        "Wonn": "Won"
+    },
+
+    "workflow": {
+        "incoming_dir": "incoming",
+        "archive_dir": "archive",
+        "delivery_dir": "delivery",
+        "failed_dir": "failed",
+        "logs_dir": "logs",
+        "accepted_extensions": [
+            ".xlsx"
+        ]
+    }
+
+}

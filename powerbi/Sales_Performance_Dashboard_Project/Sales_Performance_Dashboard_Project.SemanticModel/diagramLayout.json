@@ -1,0 +1,73 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "Clean_sales_data",
+          "nodeLineageTag": "34d664aa-09e2-482c-91bb-c1080f8576b4",
+          "size": {
+            "height": 518,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 423,
+            "y": 229
+          },
+          "nodeIndex": "Date_Table",
+          "nodeLineageTag": "d6c0e052-6cb3-4387-a13a-7e7e346ad5cc",
+          "size": {
+            "height": 236,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 420,
+            "y": 0
+          },
+          "nodeIndex": "Dim_Salesperson",
+          "nodeLineageTag": "45462951-6f13-4e27-91c8-ead186928cef",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 707,
+            "y": 159
+          },
+          "nodeIndex": "Salesperson_Filter",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

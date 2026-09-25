@@ -1,0 +1,31 @@
+table Dim_Salesperson
+	lineageTag: 45462951-6f13-4e27-91c8-ead186928cef
+
+	column Salesperson
+		lineageTag: 4db98786-134c-4260-88b5-eb42c4c3a741
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Clean_sales_data[Salesperson]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Period_Target
+		formatString: 0
+		lineageTag: ec57d7fa-1acf-4792-a82f-b0191d898e3d
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Period_Target]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Salesperson = calculated
+		mode: import
+		source =
+				
+				SUMMARIZE(
+				    Clean_sales_data,
+				    Clean_sales_data[Salesperson],
+				    "Period_Target", MAX(Clean_sales_data[Target]))
+
+	annotation PBI_Id = 1169fb0a364940bb8509d7fbcf0d741a
+
