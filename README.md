@@ -30,6 +30,8 @@ For a detailed walkthrough of the business problem, validation logic, production
 
 [View the full project case study](documentation/CASE_STUDY.md)
 
+[Client Input Template](documentation/CLIENT_INPUT_TEMPLATE.md)
+
 ## Workflow
 
 ```
