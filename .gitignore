@@ -56,3 +56,7 @@ Sales_Performance_Review_OLD/
 
 # Power BI binary file - PBIP source is used for GitHub
 *.pbix
+
+documentation/SERVICE_OFFER.md
+
+documentation/CLIENT_DISCOVERY_QUESTIONNAIRE.md
