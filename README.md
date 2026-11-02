@@ -218,3 +218,10 @@ C:\Path\To\Sales_KPI_Automation\data_processed\clean_sales_data.xlsx
 > The repository uses a placeholder path for `DataFilePath` so that no machine-specific user path is stored in source control.
 
 > Power BI refresh is currently separate from the scheduled Python production workflow.
+
+## Contact & Collaboration
+
+For business reporting and automation inquiries, feel free to reach out:
+
+- **Email:** [osamakaaki.business@gmail.com](mailto:osamakaaki.business@gmail.com)
+- **LinkedIn:** [Osama Kaaki](https://www.linkedin.com/in/osama-kaaki/)
